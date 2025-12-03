@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:dart_result/dart_result.dart';
 
 void main() {
@@ -397,9 +397,7 @@ void main() {
 
     test('foldを使ったエラーハンドリング', () {
       final result = Result.ok(42);
-      final message = result
-          .map((x) => x * 2)
-          .fold(
+      final message = result.map((x) => x * 2).fold(
             (error) => 'エラーが発生しました: $error',
             (value) => '値は $value です',
           );
@@ -599,7 +597,8 @@ void main() {
 
     test('値が存在しない場合はNoneをそのまま返す', () async {
       final option = Option.none();
-      final chained = await option.andThenAsync((x) async => Option.some(x * 2));
+      final chained =
+          await option.andThenAsync((x) async => Option.some(x * 2));
       expect(chained.isNone, true);
     });
   });
@@ -735,18 +734,14 @@ void main() {
     });
 
     test('フォールバック処理のチェーン', () {
-      final result = Option.none()
-          .orElse(() => Option.some(0))
-          .map((x) => x * 2)
-          .unwrap();
+      final result =
+          Option.none().orElse(() => Option.some(0)).map((x) => x * 2).unwrap();
       expect(result, 0);
     });
 
     test('foldを使った値の処理', () {
       final option = Option.some(42);
-      final message = option
-          .map((x) => x * 2)
-          .fold(
+      final message = option.map((x) => x * 2).fold(
             () => '値が存在しません',
             (value) => '値は $value です',
           );
@@ -754,15 +749,11 @@ void main() {
     });
 
     test('filterとmapの組み合わせ', () {
-      final option = Option.some(42)
-          .filter((x) => x > 0)
-          .map((x) => x * 2);
+      final option = Option.some(42).filter((x) => x > 0).map((x) => x * 2);
       expect(option.isSome, true);
       expect(option.unwrap(), 84);
 
-      final filtered = Option.some(-1)
-          .filter((x) => x > 0)
-          .map((x) => x * 2);
+      final filtered = Option.some(-1).filter((x) => x > 0).map((x) => x * 2);
       expect(filtered.isNone, true);
     });
   });
@@ -783,4 +774,3 @@ void main() {
     });
   });
 }
-

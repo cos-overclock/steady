@@ -551,10 +551,30 @@ Result<int, Exception> parseAndValidate(String input) {
 }
 ```
 
+## サンプルアプリケーション
+
+`example`ディレクトリにサンプルアプリケーションが含まれています。
+
+```bash
+cd example
+dart pub get
+dart run example.dart
+```
+
+サンプルアプリケーションでは以下の内容をデモンストレーションしています：
+
+- Result型の基本的な使用方法
+- Result型のチェーン処理
+- Result型のエラーハンドリング
+- Option型の基本的な使用方法
+- Option型のチェーン処理
+- Option型からResult型への変換
+- 実用的な例（バリデーション、データ取得）
+
 ## テスト
 
 ```bash
-flutter test
+dart test
 ```
 
 ## コントリビューション
@@ -564,4 +584,4 @@ flutter test
 ## 関連リンク
 
 - [pub.dev](https://pub.dev/packages/dart_result)
-- [GitHub](https://github.com/yourusername/dart_result)
+- [GitHub](https://github.com/cos-overclock/dart_result)
