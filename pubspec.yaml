@@ -1,9 +1,9 @@
-name: rustic
+name: steady
 description: "A Result type library for Dart inspired by Rust's Result<T, E>. Provides type-safe error handling with rich utility methods."
 version: 1.0.0
 license: MIT
-homepage: https://github.com/cos-overclock/rustic
-repository: https://github.com/cos-overclock/rustic
+homepage: https://github.com/cos-overclock/steady
+repository: https://github.com/cos-overclock/steady
 
 environment:
   sdk: ">=3.0.0 <4.0.0"

@@ -1,5 +1,5 @@
-name: rustic_example
-description: Example application for rustic package
+name: steady_example
+description: Example application for steady package
 version: 1.0.0
 publish_to: none
 
@@ -7,6 +7,6 @@ environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  rustic:
+  steady:
     path: ../
 

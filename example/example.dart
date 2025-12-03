@@ -1,7 +1,7 @@
-import 'package:rustic/rustic.dart';
+import 'package:steady/steady.dart';
 
 void main() {
-  print('=== rustic サンプルアプリケーション ===\n');
+  print('=== steady サンプルアプリケーション ===\n');
 
   // Result型の基本的な使用例
   demonstrateResultBasic();
