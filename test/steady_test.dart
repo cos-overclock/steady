@@ -293,8 +293,8 @@ void main() {
     test('成功時にonSuccessを呼び出す', () {
       final result = Result.ok(42);
       final message = result.fold(
-        (error) => 'Error: $error',
-        (value) => 'Value: $value',
+        onFailure: (error) => 'Error: $error',
+        onSuccess: (value) => 'Value: $value',
       );
       expect(message, 'Value: 42');
     });
@@ -303,8 +303,8 @@ void main() {
       final error = Exception('エラー');
       final result = Result.error(error);
       final message = result.fold(
-        (error) => 'Error: $error',
-        (value) => 'Value: $value',
+        onFailure: (error) => 'Error: $error',
+        onSuccess: (value) => 'Value: $value',
       );
       expect(message, contains('Error:'));
       expect(message, contains('エラー'));
@@ -313,15 +313,15 @@ void main() {
     test('異なる型を返すことができる', () {
       final result = Result.ok(42);
       final count = result.fold(
-        (error) => 0,
-        (value) => 1,
+        onFailure: (error) => 0,
+        onSuccess: (value) => 1,
       );
       expect(count, 1);
 
       final error = Result.error(Exception('エラー'));
       final count2 = error.fold(
-        (error) => 0,
-        (value) => 1,
+        onFailure: (error) => 0,
+        onSuccess: (value) => 1,
       );
       expect(count2, 0);
     });
@@ -398,8 +398,8 @@ void main() {
     test('foldを使ったエラーハンドリング', () {
       final result = Result.ok(42);
       final message = result.map((x) => x * 2).fold(
-            (error) => 'エラーが発生しました: $error',
-            (value) => '値は $value です',
+            onFailure: (error) => 'エラーが発生しました: $error',
+            onSuccess: (value) => '値は $value です',
           );
       expect(message, '値は 84 です');
     });

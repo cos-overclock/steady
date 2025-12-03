@@ -82,13 +82,11 @@ void demonstrateResultErrorHandling() {
   print('--- Result型のエラーハンドリング ---');
 
   // orElseの使用
-  final result1 = Result.error(Exception('エラー1'))
-      .orElse((e) => Result.ok(0));
+  final result1 = Result.error(Exception('エラー1')).orElse((e) => Result.ok(0));
   print('orElseの結果: ${result1.unwrap()}');
 
   // recoverの使用
-  final result2 = Result.error(Exception('ネットワークエラー'))
-      .recover((e) {
+  final result2 = Result.error(Exception('ネットワークエラー')).recover((e) {
     print('エラーから回復を試みます: $e');
     return Result.ok(100);
   });
@@ -96,8 +94,8 @@ void demonstrateResultErrorHandling() {
 
   // foldの使用
   final message = Result.ok(42).fold(
-    (error) => 'エラー: $error',
-    (value) => '値は $value です',
+    onFailure: (error) => 'エラー: $error',
+    onSuccess: (value) => '値は $value です',
   );
   print('foldの結果: $message');
 }
@@ -134,9 +132,8 @@ void demonstrateOptionChaining() {
   print('チェーン処理の結果: ${result.unwrap()}');
 
   // 値が存在しない場合
-  final noneResult = Option.none()
-      .map((x) => x * 2)
-      .andThen((x) => Option.some(x + 5));
+  final noneResult =
+      Option.none().map((x) => x * 2).andThen((x) => Option.some(x + 5));
 
   print('Noneの場合の結果: ${noneResult.isNone}');
 }
@@ -181,9 +178,7 @@ void demonstrateValidation() {
   print('無効な値のエラー: ${invalidResult.err}');
 
   // チェーン処理
-  final processed = parsePositiveInt('21')
-      .map((x) => x * 2)
-      .unwrapOr(0);
+  final processed = parsePositiveInt('21').map((x) => x * 2).unwrapOr(0);
   print('処理後の値: $processed');
 }
 
@@ -203,21 +198,17 @@ void demonstrateDataFetching() {
 
   // ユーザーが見つかった場合
   final userOption = findUser('1');
-  final userName = userOption
-      .map((user) => user.name)
-      .unwrapOr('Unknown');
+  final userName = userOption.map((user) => user.name).unwrapOr('Unknown');
   print('ユーザー名: $userName');
 
   // ユーザーが見つからない場合
   final notFoundOption = findUser('999');
-  final defaultName = notFoundOption
-      .map((user) => user.name)
-      .unwrapOr('Unknown');
+  final defaultName =
+      notFoundOption.map((user) => user.name).unwrapOr('Unknown');
   print('見つからない場合: $defaultName');
 
   // OptionからResultへの変換
-  final userResult = findUser('2')
-      .toResult(() => Exception('User not found'));
+  final userResult = findUser('2').toResult(() => Exception('User not found'));
   print('Result型での処理: ${userResult.isOk}');
   if (userResult.isOk) {
     print('ユーザー名: ${userResult.unwrap().name}');
@@ -239,4 +230,3 @@ class User {
   @override
   String toString() => 'User(id: $id, name: $name, age: $age)';
 }
-

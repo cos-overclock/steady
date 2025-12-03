@@ -329,7 +329,10 @@ sealed class Result<T, E extends Exception> with _$Result<T, E> {
   ///   (value) => 'Value: $value',
   /// ); // 'Error: Exception: error'
   /// ```
-  R fold<R>(R Function(E) onFailure, R Function(T) onSuccess) => switch (this) {
+  R fold<R>(
+          {required R Function(E) onFailure,
+          required R Function(T) onSuccess}) =>
+      switch (this) {
         Ok(:final data) => onSuccess(data),
         Err(:final error) => onFailure(error),
       };
