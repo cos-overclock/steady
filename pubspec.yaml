@@ -1,18 +1,19 @@
 name: dart_result
-description: "A new Flutter package project."
+description: "A Result type library for Dart inspired by Rust's Result<T, E>. Provides type-safe error handling with rich utility methods."
 version: 1.0.0
+license: MIT
 
 environment:
-  sdk: ^3.10.1
-  flutter: ">=3.38.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
+  freezed_annotation: ^3.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
 
-flutter:
+  flutter_lints: ^6.0.0
+  build_runner: ^2.10.4
+  freezed: ^3.2.3
+

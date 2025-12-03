@@ -1,5 +1,8 @@
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+/// A Result type library for Dart inspired by Rust's Result<T, E>.
+///
+/// Provides type-safe error handling with rich utility methods.
+
+library;
+
+export 'src/result.dart';
+export 'src/option.dart';
