@@ -1,7 +1,7 @@
-import 'package:dart_result/dart_result.dart';
+import 'package:rustic/rustic.dart';
 
 void main() {
-  print('=== dart_result サンプルアプリケーション ===\n');
+  print('=== rustic サンプルアプリケーション ===\n');
 
   // Result型の基本的な使用例
   demonstrateResultBasic();

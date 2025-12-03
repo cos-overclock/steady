@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:dart_result/dart_result.dart';
+import 'package:rustic/rustic.dart';
 
 void main() {
   group('Result型の基本操作', () {

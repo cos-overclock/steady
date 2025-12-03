@@ -1,6 +1,6 @@
-# dart_result
+# rustic
 
-[![pub package](https://img.shields.io/pub/v/dart_result.svg)](https://pub.dev/packages/dart_result)
+[![pub package](https://img.shields.io/pub/v/rustic.svg)](https://pub.dev/packages/rustic)
 
 Dart用のResult型とOption型の汎用ライブラリです。Rustの`Result<T, E>`型と`Option<T>`型にインスパイアされた実装で、例外処理とnull安全性を明示的かつ型安全に扱うことができます。
 
@@ -19,7 +19,7 @@ Dart用のResult型とOption型の汎用ライブラリです。Rustの`Result<T
 
 ```yaml
 dependencies:
-  dart_result: ^1.0.0
+  rustic: ^1.0.0
 ```
 
 その後、以下のコマンドを実行:
@@ -35,7 +35,7 @@ flutter pub get
 #### Resultの作成
 
 ```dart
-import 'package:dart_result/dart_result.dart';
+import 'package:rustic/rustic.dart';
 
 // 成功を表すResult
 final success = Result.ok(42);
@@ -80,7 +80,7 @@ if (result.isErr) {
 #### Optionの作成
 
 ```dart
-import 'package:dart_result/dart_result.dart';
+import 'package:rustic/rustic.dart';
 
 // 値が存在するOption
 final some = Option.some(42);
@@ -583,5 +583,5 @@ dart test
 
 ## 関連リンク
 
-- [pub.dev](https://pub.dev/packages/dart_result)
-- [GitHub](https://github.com/cos-overclock/dart_result)
+- [pub.dev](https://pub.dev/packages/rustic)
+- [GitHub](https://github.com/cos-overclock/rustic)

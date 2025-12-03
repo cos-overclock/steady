@@ -1,9 +1,9 @@
-name: dart_result
+name: rustic
 description: "A Result type library for Dart inspired by Rust's Result<T, E>. Provides type-safe error handling with rich utility methods."
 version: 1.0.0
 license: MIT
-homepage: https://github.com/cos-overclock/dart_result
-repository: https://github.com/cos-overclock/dart_result
+homepage: https://github.com/cos-overclock/rustic
+repository: https://github.com/cos-overclock/rustic
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
