@@ -70,17 +70,10 @@ void main() {
       expect(result.expect('メッセージ'), 42);
     });
 
-    test('失敗時にカスタムメッセージ付きで例外を投げる', () {
+    test('失敗時に元の例外をそのまま投げる', () {
       final error = Exception('エラー');
       final result = Result.error(error);
-      expect(
-        () => result.expect('値の取得に失敗'),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('値の取得に失敗'),
-        )),
-      );
+      expect(() => result.expect('値の取得に失敗'), throwsA(same(error)));
     });
   });
 
@@ -128,6 +121,21 @@ void main() {
       expect(doubled.isErr, true);
       expect(doubled.err, error);
     });
+
+    test('成功コールバックが同じ型の例外を投げたらErrに包む', () {
+      final result = Result<int, FormatException>.ok(10);
+      final err = result.map((x) => throw FormatException('fail'));
+      expect(err.isErr, true);
+      expect(err.err, isA<FormatException>());
+    });
+
+    test('成功コールバックが別型の例外を投げたらそのまま伝播する', () {
+      final result = Result<int, FormatException>.ok(10);
+      expect(
+        () => result.map((x) => throw StateError('boom')),
+        throwsA(isA<StateError>()),
+      );
+    });
   });
 
   group('mapAsync', () {
@@ -147,6 +155,25 @@ void main() {
       final doubled = await result.mapAsync((x) async => x * 2);
       expect(doubled.isErr, true);
       expect(doubled.err, error);
+    });
+
+    test('非同期コールバックが同じ型の例外を投げたらErrに包む', () async {
+      final result = Result<int, FormatException>.ok(10);
+      final err = await result.mapAsync((x) async {
+        throw FormatException('fail');
+      });
+      expect(err.isErr, true);
+      expect(err.err, isA<FormatException>());
+    });
+
+    test('非同期コールバックが別型の例外を投げたらそのまま伝播する', () {
+      final result = Result<int, FormatException>.ok(10);
+      expect(
+        () => result.mapAsync((x) async {
+          throw StateError('boom');
+        }),
+        throwsA(isA<StateError>()),
+      );
     });
   });
 
@@ -191,9 +218,9 @@ void main() {
 
   group('andThen', () {
     test('成功時にResultを返す関数をチェーンできる', () {
-      final result = Result.ok(21)
-          .andThen((x) => Result.ok(x * 2))
-          .andThen((x) => Result.ok(x + 1));
+      final result = Result.ok(
+        21,
+      ).andThen((x) => Result.ok(x * 2)).andThen((x) => Result.ok(x + 1));
       expect(result.isOk, true);
       expect(result.unwrap(), 43);
     });
@@ -208,9 +235,9 @@ void main() {
 
     test('チェーン中に失敗が発生した場合、そのエラーを返す', () {
       final error = Exception('チェーン中のエラー');
-      final result = Result.ok(21)
-          .andThen((x) => Result.error(error))
-          .andThen((x) => Result.ok(x * 2));
+      final result = Result.ok(
+        21,
+      ).andThen((x) => Result.error(error)).andThen((x) => Result.ok(x * 2));
       expect(result.isErr, true);
       expect(result.err, error);
     });
@@ -236,6 +263,16 @@ void main() {
       final chained = await result.andThenAsync((x) async => Result.ok(x * 2));
       expect(chained.isErr, true);
       expect(chained.err, error);
+    });
+
+    test('非同期チェーンが同じ型の例外を投げたらErrに包む', () async {
+      final result = await Result<int, FormatException>.ok(1).andThenAsync((
+        x,
+      ) async {
+        throw FormatException('fail');
+      });
+      expect(result.isErr, true);
+      expect(result.err, isA<FormatException>());
     });
   });
 
@@ -388,10 +425,9 @@ void main() {
     });
 
     test('エラーハンドリングのチェーン', () {
-      final result = Result.error(Exception('最初のエラー'))
-          .orElse((e) => Result.ok(0))
-          .map((x) => x * 2)
-          .unwrap();
+      final result = Result.error(
+        Exception('最初のエラー'),
+      ).orElse((e) => Result.ok(0)).map((x) => x * 2).unwrap();
       expect(result, 0);
     });
 
@@ -490,11 +526,13 @@ void main() {
       final option = Option.none();
       expect(
         () => option.expect('値の取得に失敗'),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('値の取得に失敗'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('値の取得に失敗'),
+          ),
+        ),
       );
     });
   });
@@ -560,9 +598,9 @@ void main() {
 
   group('Option型のandThen', () {
     test('値が存在する場合にOptionを返す関数をチェーンできる', () {
-      final option = Option.some(21)
-          .andThen((x) => Option.some(x * 2))
-          .andThen((x) => Option.some(x + 1));
+      final option = Option.some(
+        21,
+      ).andThen((x) => Option.some(x * 2)).andThen((x) => Option.some(x + 1));
       expect(option.isSome, true);
       expect(option.unwrap(), 43);
     });
@@ -574,9 +612,9 @@ void main() {
     });
 
     test('チェーン中にNoneが返された場合、そのNoneを返す', () {
-      final option = Option.some(21)
-          .andThen((x) => Option.none())
-          .andThen((x) => Option.some(x * 2));
+      final option = Option.some(
+        21,
+      ).andThen((x) => Option.none()).andThen((x) => Option.some(x * 2));
       expect(option.isNone, true);
     });
   });
@@ -597,8 +635,9 @@ void main() {
 
     test('値が存在しない場合はNoneをそのまま返す', () async {
       final option = Option.none();
-      final chained =
-          await option.andThenAsync((x) async => Option.some(x * 2));
+      final chained = await option.andThenAsync(
+        (x) async => Option.some(x * 2),
+      );
       expect(chained.isNone, true);
     });
   });
@@ -674,34 +713,24 @@ void main() {
     test('値が存在する場合にonSomeを呼び出す', () {
       final option = Option.some(42);
       final message = option.fold(
-        () => '値が存在しません',
-        (value) => '値は $value です',
-      );
+          onNone: () => '値が存在しません', onSome: (value) => '値は $value です');
       expect(message, '値は 42 です');
     });
 
     test('値が存在しない場合にonNoneを呼び出す', () {
       final option = Option.none();
       final message = option.fold(
-        () => '値が存在しません',
-        (value) => '値は $value です',
-      );
+          onNone: () => '値が存在しません', onSome: (value) => '値は $value です');
       expect(message, '値が存在しません');
     });
 
     test('異なる型を返すことができる', () {
       final option = Option.some(42);
-      final count = option.fold(
-        () => 0,
-        (value) => 1,
-      );
+      final count = option.fold(onNone: () => 0, onSome: (value) => 1);
       expect(count, 1);
 
       final none = Option.none();
-      final count2 = none.fold(
-        () => 0,
-        (value) => 1,
-      );
+      final count2 = none.fold(onNone: () => 0, onSome: (value) => 1);
       expect(count2, 0);
     });
   });
@@ -741,10 +770,9 @@ void main() {
 
     test('foldを使った値の処理', () {
       final option = Option.some(42);
-      final message = option.map((x) => x * 2).fold(
-            () => '値が存在しません',
-            (value) => '値は $value です',
-          );
+      final message = option
+          .map((x) => x * 2)
+          .fold(onNone: () => '値が存在しません', onSome: (value) => '値は $value です');
       expect(message, '値は 84 です');
     });
 

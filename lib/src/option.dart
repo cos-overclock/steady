@@ -39,6 +39,20 @@ sealed class Option<T> with _$Option<T> {
   /// 値が存在しないOptionを作成します。
   const factory Option.none() = None;
 
+  /// 値が存在するかしないかを表すOptionを作成します。
+  ///
+  /// [value] 値
+  ///
+  /// 値が存在する場合はOption.someを、存在しない場合はOption.noneを返します。
+  ///
+  /// 例:
+  /// ```dart
+  /// final option = Option.fromNullable(42); // Option.some(42)
+  /// final option2 = Option.fromNullable(null); // Option.none()
+  /// ```
+  factory Option.fromNullable(T? value) =>
+      value == null ? Option.none() : Option.some(value);
+
   /// 値を取得します。値が存在しない場合は例外を投げます。
   ///
   /// 値が存在する場合は値を返し、存在しない場合は例外を投げます。
@@ -114,7 +128,8 @@ sealed class Option<T> with _$Option<T> {
   /// ```
   T expect(String message) => switch (this) {
         Some(:final value) => value,
-        None() => throw Exception(message),
+        // StateError makes it explicit that the object is in an invalid state.
+        None() => throw StateError(message),
       };
 
   /// Optionが値を持つかどうかを判定します。
@@ -273,9 +288,7 @@ sealed class Option<T> with _$Option<T> {
   /// await Option.none()
   ///   .orElseAsync(() async => await fetchFallbackOption());
   /// ```
-  Future<Option<T>> orElseAsync(
-    Future<Option<T>> Function() onNone,
-  ) async =>
+  Future<Option<T>> orElseAsync(Future<Option<T>> Function() onNone) async =>
       switch (this) {
         Some(:final value) => Option.some(value),
         None() => await onNone(),
@@ -326,7 +339,8 @@ sealed class Option<T> with _$Option<T> {
   ///   (value) => '値は $value です',
   /// ); // '値が存在しません'
   /// ```
-  R fold<R>(R Function() onNone, R Function(T) onSome) => switch (this) {
+  R fold<R>({required R Function() onNone, required R Function(T) onSome}) =>
+      switch (this) {
         Some(:final value) => onSome(value),
         None() => onNone(),
       };

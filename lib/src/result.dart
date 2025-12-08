@@ -120,10 +120,20 @@ sealed class Result<T, E extends Exception> with _$Result<T, E> {
   /// final error = Result.error(Exception('error'));
   /// final doubled = error.map((x) => x * 2); // エラーをそのまま返す
   /// ```
-  Result<U, E> map<U>(U Function(T) onSuccess) => switch (this) {
-        Ok(:final data) => Ok(onSuccess(data)),
-        Err(:final error) => Err(error),
-      };
+  Result<U, E> map<U>(U Function(T) onSuccess) {
+    switch (this) {
+      case Ok(:final data):
+        try {
+          return Ok(onSuccess(data));
+        } on E catch (e) {
+          return Err(e);
+        } catch (e, st) {
+          return Err(Error.throwWithStackTrace(e, st));
+        }
+      case Err(:final error):
+        return Err(error);
+    }
+  }
 
   /// 成功値を非同期で別の型に変換します。失敗の場合はそのまま返します。
   ///
@@ -137,11 +147,20 @@ sealed class Result<T, E extends Exception> with _$Result<T, E> {
   /// final result = Result.ok('data');
   /// final processed = await result.mapAsync((x) async => await process(x));
   /// ```
-  Future<Result<U, E>> mapAsync<U>(Future<U> Function(T) onSuccess) async =>
-      switch (this) {
-        Ok(:final data) => Ok(await onSuccess(data)),
-        Err(:final error) => Err(error),
-      };
+  Future<Result<U, E>> mapAsync<U>(Future<U> Function(T) onSuccess) async {
+    switch (this) {
+      case Ok(:final data):
+        try {
+          return Ok(await onSuccess(data));
+        } on E catch (e) {
+          return Err(e);
+        } catch (e, st) {
+          return Err(Error.throwWithStackTrace(e, st));
+        }
+      case Err(:final error):
+        return Err(error);
+    }
+  }
 
   /// エラー値を別の型の例外に変換します。成功の場合はそのまま返します。
   ///
@@ -155,11 +174,20 @@ sealed class Result<T, E extends Exception> with _$Result<T, E> {
   /// final error = Result.error(FormatException('parse error'));
   /// final mapped = error.mapErr((e) => Exception('converted: $e'));
   /// ```
-  Result<T, F> mapErr<F extends Exception>(F Function(E) onFailure) =>
-      switch (this) {
-        Ok(:final data) => Ok(data),
-        Err(:final error) => Err(onFailure(error)),
-      };
+  Result<T, F> mapErr<F extends Exception>(F Function(E) onFailure) {
+    switch (this) {
+      case Ok(:final data):
+        return Ok(data);
+      case Err(:final error):
+        try {
+          return Err(onFailure(error));
+        } on F catch (e) {
+          return Err(e);
+        } catch (e, st) {
+          return Err(Error.throwWithStackTrace(e, st));
+        }
+    }
+  }
 
   /// エラー値を非同期で別の型の例外に変換します。成功の場合はそのまま返します。
   ///
@@ -175,11 +203,20 @@ sealed class Result<T, E extends Exception> with _$Result<T, E> {
   /// ```
   Future<Result<T, F>> mapErrAsync<F extends Exception>(
     Future<F> Function(E) onFailure,
-  ) async =>
-      switch (this) {
-        Ok(:final data) => Ok(data),
-        Err(:final error) => Err(await onFailure(error)),
-      };
+  ) async {
+    switch (this) {
+      case Ok(:final data):
+        return Ok(data);
+      case Err(:final error):
+        try {
+          return Err(await onFailure(error));
+        } on F catch (e) {
+          return Err(e);
+        } catch (e, st) {
+          return Err(Error.throwWithStackTrace(e, st));
+        }
+    }
+  }
 
   /// 成功時にResultを返す関数を適用し、失敗時はそのまま返します。
   ///
@@ -197,10 +234,20 @@ sealed class Result<T, E extends Exception> with _$Result<T, E> {
   /// Result.error(Exception('error'))
   ///   .andThen((x) => Result.ok(x * 2)); // エラーをそのまま返す
   /// ```
-  Result<U, E> andThen<U>(Result<U, E> Function(T) onSuccess) => switch (this) {
-        Ok(:final data) => onSuccess(data),
-        Err(:final error) => Err(error),
-      };
+  Result<U, E> andThen<U>(Result<U, E> Function(T) onSuccess) {
+    switch (this) {
+      case Ok(:final data):
+        try {
+          return onSuccess(data);
+        } on E catch (e) {
+          return Err(e);
+        } catch (e, st) {
+          return Err(Error.throwWithStackTrace(e, st));
+        }
+      case Err(:final error):
+        return Err(error);
+    }
+  }
 
   /// 非同期でResultを返す関数を適用し、失敗時はそのまま返します。
   ///
@@ -216,11 +263,21 @@ sealed class Result<T, E extends Exception> with _$Result<T, E> {
   /// ```
   Future<Result<U, E>> andThenAsync<U>(
     Future<Result<U, E>> Function(T) onSuccess,
-  ) async =>
-      switch (this) {
-        Ok(:final data) => await onSuccess(data),
-        Err(:final error) => Err(error),
-      };
+  ) async {
+    switch (this) {
+      case Ok(:final data):
+        try {
+          return await onSuccess(data);
+        } on E catch (e) {
+          return Err(e);
+        } catch (e, st) {
+          return Err(Error.throwWithStackTrace(e, st));
+        }
+
+      case Err(:final error):
+        return Err(error);
+    }
+  }
 
   /// 成功値を取得します。失敗の場合は計算されたデフォルト値を返します。
   ///
@@ -262,7 +319,9 @@ sealed class Result<T, E extends Exception> with _$Result<T, E> {
   /// ```
   T expect(String message) => switch (this) {
         Ok(:final data) => data,
-        Err(:final error) => throw Exception('$message: $error'),
+        // Keep the original error type/stack trace for callers that catch E.
+        Err(:final error) =>
+          throw Error.throwWithStackTrace(error, StackTrace.current),
       };
 
   /// 失敗時に別のResultを返します。成功の場合はそのまま返します。
@@ -282,11 +341,20 @@ sealed class Result<T, E extends Exception> with _$Result<T, E> {
   /// ```
   Result<T, F> orElse<F extends Exception>(
     Result<T, F> Function(E) onFailure,
-  ) =>
-      switch (this) {
-        Ok(:final data) => Ok(data),
-        Err(:final error) => onFailure(error),
-      };
+  ) {
+    switch (this) {
+      case Ok(:final data):
+        return Ok(data);
+      case Err(:final error):
+        try {
+          return onFailure(error);
+        } on F catch (e) {
+          return Err(e);
+        } catch (e, st) {
+          return Err(Error.throwWithStackTrace(e, st));
+        }
+    }
+  }
 
   /// 非同期で失敗時に別のResultを返します。成功の場合はそのまま返します。
   ///
@@ -301,11 +369,20 @@ sealed class Result<T, E extends Exception> with _$Result<T, E> {
   /// ```
   Future<Result<T, F>> orElseAsync<F extends Exception>(
     Future<Result<T, F>> Function(E) onFailure,
-  ) async =>
-      switch (this) {
-        Ok(:final data) => Ok(data),
-        Err(:final error) => await onFailure(error),
-      };
+  ) async {
+    switch (this) {
+      case Ok(:final data):
+        return Ok(data);
+      case Err(:final error):
+        try {
+          return await onFailure(error);
+        } on F catch (e) {
+          return Err(e);
+        } catch (e, st) {
+          return Err(Error.throwWithStackTrace(e, st));
+        }
+    }
+  }
 
   /// 成功/失敗の両方で値を返します（fold操作）。
   ///
@@ -352,10 +429,20 @@ sealed class Result<T, E extends Exception> with _$Result<T, E> {
   ///   return Result.ok(defaultValue);
   /// });
   /// ```
-  Result<T, E> recover(Result<T, E> Function(E) onFailure) => switch (this) {
-        Ok(:final data) => Ok(data),
-        Err(:final error) => onFailure(error),
-      };
+  Result<T, E> recover(Result<T, E> Function(E) onFailure) {
+    switch (this) {
+      case Ok(:final data):
+        return Ok(data);
+      case Err(:final error):
+        try {
+          return onFailure(error);
+        } on E catch (e) {
+          return Err(e);
+        } catch (e, st) {
+          return Err(Error.throwWithStackTrace(e, st));
+        }
+    }
+  }
 
   /// 非同期でエラーから回復を試みます。成功の場合はそのまま返します。
   ///
@@ -370,11 +457,20 @@ sealed class Result<T, E extends Exception> with _$Result<T, E> {
   /// ```
   Future<Result<T, E>> recoverAsync(
     Future<Result<T, E>> Function(E) onFailure,
-  ) async =>
-      switch (this) {
-        Ok(:final data) => Ok(data),
-        Err(:final error) => await onFailure(error),
-      };
+  ) async {
+    switch (this) {
+      case Ok(:final data):
+        return Ok(data);
+      case Err(:final error):
+        try {
+          return await onFailure(error);
+        } on E catch (e) {
+          return Err(e);
+        } catch (e, st) {
+          return Err(Error.throwWithStackTrace(e, st));
+        }
+    }
+  }
 
   /// 成功値を取得します。失敗の場合はnullを返します。
   ///

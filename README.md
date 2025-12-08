@@ -59,8 +59,8 @@ final value = failure.unwrapOrElse((error) {
   return 0;
 });
 
-// カスタムメッセージ付きで例外を投げる
-final value = failure.expect('値の取得に失敗'); // Exceptionを投げる
+// カスタムメッセージ付きで例外を投げる（元のE型で再throw）
+final value = failure.expect('値の取得に失敗'); // 失敗時は元の例外を再送出
 ```
 
 ### 成功/失敗の判定
@@ -104,8 +104,8 @@ final value = none.unwrapOrElse(() {
   return 0;
 });
 
-// カスタムメッセージ付きで例外を投げる
-final value = none.expect('値の取得に失敗'); // Exceptionを投げる
+// カスタムメッセージ付きで例外を投げる（StateErrorを送出）
+final value = none.expect('値の取得に失敗'); // StateErrorを投げる
 ```
 
 #### 値の存在判定
@@ -126,7 +126,8 @@ if (option.isNone) {
 
 ### 値の変換 (`map`)
 
-成功値を別の型に変換します。失敗時はエラーをそのまま返します。
+成功値を別の型に変換します。失敗時はエラーをそのまま返します。  
+`onSuccess` が `E` 型の例外を投げた場合は `Err` に包まれ、それ以外の例外はそのまま再throwされます。
 
 ```dart
 final result = Result.ok(21);
@@ -139,7 +140,8 @@ final doubled = error.map((x) => x * 2); // エラーをそのまま返す
 
 ### 非同期変換 (`mapAsync`)
 
-非同期で値を変換します。
+非同期で値を変換します。  
+`onSuccess` が `E` 型の例外を投げた場合は `Err` に包まれ、それ以外の例外はそのまま再throwされます。
 
 ```dart
 final result = Result.ok('data');
@@ -300,7 +302,7 @@ final result = none.toResult(() => Exception('値が存在しません'));
 成功値を取得します。失敗時は計算されたデフォルト値を返します。
 
 #### `T expect(String message)`
-成功値を取得します。失敗時はカスタムメッセージ付きで例外を投げます。
+成功値を取得します。失敗時は元の例外を再送出します。
 
 ### 判定
 
@@ -379,7 +381,7 @@ Resultが失敗かどうかを判定します。
 値を取得します。値が存在しない場合は計算されたデフォルト値を返します。
 
 #### `T expect(String message)`
-値を取得します。値が存在しない場合はカスタムメッセージ付きで例外を投げます。
+値を取得します。値が存在しない場合はStateErrorを投げます。
 
 #### 判定
 

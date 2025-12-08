@@ -1,3 +1,11 @@
+## 1.1.0
+
+- `Result.expect` が元の例外型/スタックを保持したまま再送出するよう変更
+- `Result` の `map` / `mapAsync` / `andThen(Async)` / `orElse(Async)` / `recover(Async)` / `mapErr(Async)` で、コールバックが `E` 型を投げた場合は `Err` に包み、それ以外の例外は再throwするよう挙動を明確化
+- `Option.expect` が `StateError` を投げるように変更
+- ドキュメントを上記挙動に合わせて更新
+- 例外ラップ/伝播のテストケースを追加
+
 ## 1.0.1
 
 foldメソッドを名前付き引数に変更
