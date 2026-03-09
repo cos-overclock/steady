@@ -17,6 +17,28 @@ void main() {
       expect(result.isErr, true);
       expect(result.err, error);
     });
+
+    test('同じ成功値は等価でhashCodeも一致する', () {
+      final first = Result.ok(42);
+      final second = Result.ok(42);
+      expect(first, second);
+      expect(first.hashCode, second.hashCode);
+    });
+
+    test('コレクションを持つ成功値も深い比較で等価になる', () {
+      final first = Result<List<int>, Exception>.ok([1, 2, 3]);
+      final second = Result<List<int>, Exception>.ok([1, 2, 3]);
+      expect(first, second);
+      expect(first.hashCode, second.hashCode);
+    });
+
+    test('同じ失敗値は等価でhashCodeも一致する', () {
+      final error = FormatException('エラー');
+      final first = Result<int, FormatException>.error(error);
+      final second = Result<int, FormatException>.error(error);
+      expect(first, second);
+      expect(first.hashCode, second.hashCode);
+    });
   });
 
   group('unwrap', () {
@@ -471,6 +493,27 @@ void main() {
       expect(option.isSome, false);
       expect(option.isNone, true);
       expect(option.value, null);
+    });
+
+    test('同じSome値は等価でhashCodeも一致する', () {
+      final first = Option.some(42);
+      final second = Option.some(42);
+      expect(first, second);
+      expect(first.hashCode, second.hashCode);
+    });
+
+    test('コレクションを持つSomeも深い比較で等価になる', () {
+      final first = Option.some([1, 2, 3]);
+      final second = Option.some([1, 2, 3]);
+      expect(first, second);
+      expect(first.hashCode, second.hashCode);
+    });
+
+    test('None同士は等価でhashCodeも一致する', () {
+      final first = Option<int>.none();
+      final second = Option<int>.none();
+      expect(first, second);
+      expect(first.hashCode, second.hashCode);
     });
   });
 

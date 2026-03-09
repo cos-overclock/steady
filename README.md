@@ -12,7 +12,7 @@ and optional values without relying on unchecked exceptions or nullable values.
 - Explicit optional values with `Option<T>`
 - Sync and async transformation helpers
 - Chaining and fallback APIs for readable workflows
-- Freezed-based immutable data types with pattern matching support
+- Immutable sealed data types with pattern matching support
 
 ## Installation
 

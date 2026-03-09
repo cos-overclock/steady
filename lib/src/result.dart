@@ -1,6 +1,4 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'result.freezed.dart';
+import 'package:collection/collection.dart';
 
 /// Result型は、成功または失敗を表す汎用的な型です。
 ///
@@ -28,8 +26,7 @@ part 'result.freezed.dart';
 ///   .andThen((x) => Result.ok(x + 1))
 ///   .unwrap(); // 43
 /// ```
-@freezed
-sealed class Result<T, E extends Exception> with _$Result<T, E> {
+sealed class Result<T, E extends Exception> {
   const Result._();
 
   /// 成功を表すResultを作成します。
@@ -507,4 +504,42 @@ sealed class Result<T, E extends Exception> with _$Result<T, E> {
         Ok() => null,
         Err(:final error) => error,
       };
+}
+
+final class Ok<T, E extends Exception> extends Result<T, E> {
+  const Ok(this.data) : super._();
+
+  static const _equality = DeepCollectionEquality();
+
+  final T data;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Ok<T, E> && _equality.equals(other.data, data);
+
+  @override
+  int get hashCode => Object.hash(runtimeType, _equality.hash(data));
+
+  @override
+  String toString() => 'Ok(data: $data)';
+}
+
+final class Err<T, E extends Exception> extends Result<T, E> {
+  const Err(this.error) : super._();
+
+  static const _equality = DeepCollectionEquality();
+
+  final E error;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Err<T, E> && _equality.equals(other.error, error);
+
+  @override
+  int get hashCode => Object.hash(runtimeType, _equality.hash(error));
+
+  @override
+  String toString() => 'Err(error: $error)';
 }
