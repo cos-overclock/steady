@@ -32,12 +32,27 @@ void main() {
       expect(first.hashCode, second.hashCode);
     });
 
+    test('ジェネリクスの型引数が異なる成功値同士は対称に非等価', () {
+      final first = Result<Object, Exception>.ok(42);
+      final second = Result<int, Exception>.ok(42);
+      expect(first == second, false);
+      expect(second == first, false);
+    });
+
     test('同じ失敗値は等価でhashCodeも一致する', () {
       final error = FormatException('エラー');
       final first = Result<int, FormatException>.error(error);
       final second = Result<int, FormatException>.error(error);
       expect(first, second);
       expect(first.hashCode, second.hashCode);
+    });
+
+    test('ジェネリクスの型引数が異なる失敗値同士は対称に非等価', () {
+      final error = FormatException('エラー');
+      final first = Result<Object, Exception>.error(error);
+      final second = Result<Object, FormatException>.error(error);
+      expect(first == second, false);
+      expect(second == first, false);
     });
   });
 
@@ -509,11 +524,25 @@ void main() {
       expect(first.hashCode, second.hashCode);
     });
 
+    test('ジェネリクスの型引数が異なるSome同士は対称に非等価', () {
+      final first = Option<Object>.some(42);
+      final second = Option<int>.some(42);
+      expect(first == second, false);
+      expect(second == first, false);
+    });
+
     test('None同士は等価でhashCodeも一致する', () {
       final first = Option<int>.none();
       final second = Option<int>.none();
       expect(first, second);
       expect(first.hashCode, second.hashCode);
+    });
+
+    test('ジェネリクスの型引数が異なるNone同士は対称に非等価', () {
+      final first = Option<Object>.none();
+      final second = Option<int>.none();
+      expect(first == second, false);
+      expect(second == first, false);
     });
   });
 

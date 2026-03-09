@@ -516,7 +516,9 @@ final class Ok<T, E extends Exception> extends Result<T, E> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Ok<T, E> && _equality.equals(other.data, data);
+      (other.runtimeType == runtimeType &&
+          other is Ok<T, E> &&
+          _equality.equals(other.data, data));
 
   @override
   int get hashCode => Object.hash(runtimeType, _equality.hash(data));
@@ -535,7 +537,9 @@ final class Err<T, E extends Exception> extends Result<T, E> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Err<T, E> && _equality.equals(other.error, error);
+      (other.runtimeType == runtimeType &&
+          other is Err<T, E> &&
+          _equality.equals(other.error, error));
 
   @override
   int get hashCode => Object.hash(runtimeType, _equality.hash(error));

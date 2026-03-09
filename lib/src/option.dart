@@ -376,7 +376,9 @@ final class Some<T> extends Option<T> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Some<T> && _equality.equals(other.value, value);
+      (other.runtimeType == runtimeType &&
+          other is Some<T> &&
+          _equality.equals(other.value, value));
 
   @override
   int get hashCode => Object.hash(runtimeType, _equality.hash(value));
@@ -389,7 +391,9 @@ final class None<T> extends Option<T> {
   const None() : super._();
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is None<T>;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other.runtimeType == runtimeType && other is None<T>);
 
   @override
   int get hashCode => runtimeType.hashCode;
