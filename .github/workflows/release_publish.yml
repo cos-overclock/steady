@@ -1,0 +1,82 @@
+name: Release and Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate tag against pubspec version
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          tag="${GITHUB_REF_NAME}"
+          version="${tag#v}"
+          pubspec_version="$(awk '/^version:/ { print $2; exit }' pubspec.yaml)"
+
+          if [[ "${tag}" != "v${pubspec_version}" ]]; then
+            echo "Tag ${tag} does not match pubspec.yaml version v${pubspec_version}" >&2
+            exit 1
+          fi
+
+          echo "tag=${tag}" >> "${GITHUB_OUTPUT}"
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+
+      - name: Extract release notes from CHANGELOG
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          version="${{ steps.meta.outputs.version }}"
+
+          awk -v version="${version}" '
+            $0 == "## " version { capture = 1; next }
+            /^## / && capture { exit }
+            capture { print }
+          ' CHANGELOG.md > release_notes.md
+
+          if [[ ! -s release_notes.md ]]; then
+            echo "Missing CHANGELOG.md entry for version ${version}" >&2
+            exit 1
+          fi
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          tag="${{ steps.meta.outputs.tag }}"
+
+          if gh release view "${tag}" > /dev/null 2>&1; then
+            echo "Release ${tag} already exists."
+            exit 0
+          fi
+
+          gh release create "${tag}" \
+            --verify-tag \
+            --title "${tag}" \
+            --notes-file release_notes.md
+
+  publish:
+    needs: release
+    permissions:
+      contents: read
+      id-token: write
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1

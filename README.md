@@ -164,6 +164,29 @@ Future<String> loadUserName(ApiClient client, int id) async {
 - Example app: [example/example.dart](example/example.dart)
 - Issue tracker: https://github.com/cos-overclock/steady/issues
 
+## Release Automation
+
+This repository includes a GitHub Actions workflow at `.github/workflows/release_publish.yml`.
+When you push a tag like `v1.1.1`, GitHub Actions will:
+
+- verify that the tag matches the `version` in `pubspec.yaml`
+- create a GitHub Release using the matching section from `CHANGELOG.md`
+- publish the package to `pub.dev`
+
+The workflow runs on tag pushes regardless of which branch the tag was created from.
+
+Before using it, configure automated publishing on `pub.dev`:
+
+1. Open `https://pub.dev/packages/steady/admin`.
+2. Enable publishing from GitHub Actions for `cos-overclock/steady`.
+3. Set the tag pattern to `v{{version}}`.
+
+This workflow uses GitHub OIDC via the official `dart-lang/setup-dart` reusable workflow,
+so no `pub.dev` API token needs to be stored as a GitHub secret.
+
+If you enable a required GitHub Actions environment on `pub.dev`, add the same environment
+name to the `publish` job in `.github/workflows/release_publish.yml`.
+
 ## License
 
 This package is available under the MIT License. See [LICENSE](LICENSE).
