@@ -1,3 +1,10 @@
+## 1.2.0
+
+- Replace Freezed-generated `Result` and `Option` models with handwritten sealed classes.
+- Remove the `freezed`, `freezed_annotation`, and `build_runner` dependencies along with generated `*.freezed.dart` files.
+- Preserve value equality and `hashCode`, including deep collection equality behavior.
+- Fix generic variant equality to remain symmetric and consistent with `hashCode`.
+
 ## 1.1.1
 
 - Rewrite package documentation in English to satisfy pub.dev scoring checks.
