@@ -34,7 +34,7 @@ sealed class Option<T> {
   const factory Option.some(T value) = Some<T>;
 
   /// 値が存在しないOptionを作成します。
-  const factory Option.none() = None;
+  const factory Option.none() = None<T>;
 
   /// 値が存在するかしないかを表すOptionを作成します。
   ///
@@ -371,6 +371,7 @@ final class Some<T> extends Option<T> {
 
   static const _equality = DeepCollectionEquality();
 
+  @override
   final T value;
 
   @override
