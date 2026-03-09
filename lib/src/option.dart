@@ -1,8 +1,6 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:collection/collection.dart';
 
 import 'result.dart';
-
-part 'option.freezed.dart';
 
 /// Option型は、値が存在するかしないかを表す汎用的な型です。
 ///
@@ -27,8 +25,7 @@ part 'option.freezed.dart';
 ///   .andThen((x) => Option.some(x + 1))
 ///   .unwrap(); // 43
 /// ```
-@freezed
-sealed class Option<T> with _$Option<T> {
+sealed class Option<T> {
   const Option._();
 
   /// 値が存在するOptionを作成します。
@@ -37,7 +34,7 @@ sealed class Option<T> with _$Option<T> {
   const factory Option.some(T value) = Some<T>;
 
   /// 値が存在しないOptionを作成します。
-  const factory Option.none() = None;
+  const factory Option.none() = None<T>;
 
   /// 値が存在するかしないかを表すOptionを作成します。
   ///
@@ -367,4 +364,41 @@ sealed class Option<T> with _$Option<T> {
         Some(:final value) => Result.ok(value),
         None() => Result.error(error()),
       };
+}
+
+final class Some<T> extends Option<T> {
+  const Some(this.value) : super._();
+
+  static const _equality = DeepCollectionEquality();
+
+  @override
+  final T value;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other.runtimeType == runtimeType &&
+          other is Some<T> &&
+          _equality.equals(other.value, value));
+
+  @override
+  int get hashCode => Object.hash(runtimeType, _equality.hash(value));
+
+  @override
+  String toString() => 'Some(value: $value)';
+}
+
+final class None<T> extends Option<T> {
+  const None() : super._();
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other.runtimeType == runtimeType && other is None<T>);
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  String toString() => 'None()';
 }
