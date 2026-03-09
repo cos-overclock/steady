@@ -1,4 +1,4 @@
-/// A Result type library for Dart inspired by Rust's Result<T, E>.
+/// A Result type library for Dart inspired by Rust's `Result<T, E>`.
 ///
 /// Provides type-safe error handling with rich utility methods.
 

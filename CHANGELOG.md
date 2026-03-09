@@ -1,45 +1,24 @@
+## 1.1.1
+
+- Rewrite package documentation in English to satisfy pub.dev scoring checks.
+- Escape angle brackets in the top-level library dartdoc to remove the analyzer info reported by pub.dev.
+
 ## 1.1.0
 
-- `Result.expect` が元の例外型/スタックを保持したまま再送出するよう変更
-- `Result` の `map` / `mapAsync` / `andThen(Async)` / `orElse(Async)` / `recover(Async)` / `mapErr(Async)` で、コールバックが `E` 型を投げた場合は `Err` に包み、それ以外の例外は再throwするよう挙動を明確化
-- `Option.expect` が `StateError` を投げるように変更
-- ドキュメントを上記挙動に合わせて更新
-- 例外ラップ/伝播のテストケースを追加
+- Make `Result.expect` rethrow the original exception with its original stack trace.
+- Clarify callback exception behavior in `Result.map`, `mapAsync`, `andThen`, `andThenAsync`, `orElse`, `orElseAsync`, `recover`, `recoverAsync`, `mapErr`, and `mapErrAsync`.
+- Make `Option.expect` throw `StateError`.
+- Update documentation to reflect the new behavior.
+- Add tests for exception wrapping and propagation.
 
 ## 1.0.1
 
-foldメソッドを名前付き引数に変更
+- Change `fold` to use named parameters.
 
 ## 1.0.0
 
-初回リリース
-
-### 機能
-
-#### Result型
-
-Rustの`Result<T, E>`にインスパイアされた型安全なエラーハンドリング
-
-- **基本操作**: `ok`/`error`による成功/失敗の表現、`unwrap`/`unwrapOr`/`expect`による値の取得
-- **変換**: `map`, `mapErr`による値の変換、非同期対応（`mapAsync`, `mapErrAsync`）
-- **チェーン処理**: `andThen`, `andThenAsync`による関数の合成
-- **エラー回復**: `orElse`, `recover`によるフォールバック処理
-- **fold操作**: 成功/失敗の両ケースを統一的に処理
-
-#### Option型
-
-Rustの`Option<T>`にインスパイアされた型安全なnull処理
-
-- **基本操作**: `some`/`none`による値の有無の表現、`unwrap`/`unwrapOr`/`expect`による値の取得
-- **変換**: `map`による値の変換、非同期対応（`mapAsync`）
-- **チェーン処理**: `andThen`, `andThenAsync`による関数の合成
-- **フィルタリング**: `filter`による条件に基づく値の絞り込み
-- **フォールバック**: `orElse`による代替値の提供
-- **型変換**: `toResult`によるResult型への変換
-
-#### その他
-
-- Freezedベースのイミュータブルな実装
-- パターンマッチング対応
-- 包括的なテストカバレッジ（85テストケース）
-- MIT License
+- Initial release.
+- Add `Result<T, E>` for explicit success and failure handling.
+- Add `Option<T>` for explicit optional values.
+- Include sync and async transformation helpers, chaining, recovery, and conversion APIs.
+- Build on Freezed for immutable data types and pattern matching support.

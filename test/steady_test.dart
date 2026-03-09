@@ -522,12 +522,12 @@ void main() {
       expect(option.expect('メッセージ'), 42);
     });
 
-    test('値が存在しない場合にカスタムメッセージ付きで例外を投げる', () {
+    test('値が存在しない場合にカスタムメッセージ付きでStateErrorを投げる', () {
       final option = Option.none();
       expect(
         () => option.expect('値の取得に失敗'),
         throwsA(
-          isA<Exception>().having(
+          isA<StateError>().having(
             (e) => e.toString(),
             'message',
             contains('値の取得に失敗'),
